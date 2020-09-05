@@ -1,10 +1,10 @@
 import { Body, Controller, Get, HttpCode, HttpException, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { AuthGuard } from '@tssa/common/auth.guard';
 import { Request, Response } from 'express';
 
 import { UserDto } from '../users/dto/user.dto';
-import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 
 @Controller('auth')

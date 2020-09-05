@@ -1,12 +1,12 @@
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { csrfProtection } from '@tssa/common/middlewares/csrf.middleware';
 import cookieSession from 'cookie-session';
 import csurf from 'csurf';
 import morgan from 'morgan';
 
 import { AppModule } from './app.module';
-import { csrfProtection } from './middlewares/csrf.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);

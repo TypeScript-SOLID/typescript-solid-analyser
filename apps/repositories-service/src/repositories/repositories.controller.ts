@@ -1,7 +1,7 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@tssa/common/auth.guard';
 import { Request } from 'express';
 
-import { AuthGuard } from '../guards/auth.guard';
 import { RepositoryDto } from './dto/repository.dto';
 import { RepositoriesService } from './repositories.service';
 
