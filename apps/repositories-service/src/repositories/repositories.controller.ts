@@ -1,5 +1,5 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@tssa/common/auth.guard';
+import { AuthGuard } from '@tssa/common/guards';
 import { Request } from 'express';
 
 import { RepositoryDto } from './dto/repository.dto';

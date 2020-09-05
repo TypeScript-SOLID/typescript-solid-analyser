@@ -34,6 +34,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
+    },
+    "plugins-service": {
+      "type": "application",
+      "root": "apps/plugins-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/plugins-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/plugins-service/tsconfig.app.json"
+      }
     }
   }
 }

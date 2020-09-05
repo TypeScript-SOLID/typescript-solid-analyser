@@ -1,4 +1,4 @@
-import { User } from '@tssa/common/interfaces/user.interface';
+import { User } from '@tssa/common/interfaces';
 import { Expose } from 'class-transformer';
 
 export class UserDto implements User {
