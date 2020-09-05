@@ -1,6 +1,7 @@
+import { User } from '@tssa/common/interfaces/user.interface';
 import { Expose } from 'class-transformer';
 
-export class UserDto {
+export class UserDto implements User {
   @Expose() readonly id: string;
   @Expose() readonly domain: string;
   @Expose() readonly login: string;

@@ -12,6 +12,9 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "paths": {}
+    "paths": {
+      "@tssa/common": ["libs/common/src"],
+      "@tssa/common/*": ["libs/common/src/*"]
+    }
   }
 }
