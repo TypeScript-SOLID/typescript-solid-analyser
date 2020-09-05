@@ -2,8 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
-import { SessionPayload } from './interfaces/session-payload.interface';
-import { User } from './interfaces/user.interface';
+import { SessionPayload, User } from './interfaces';
 
 declare module 'express' {
   interface Request {

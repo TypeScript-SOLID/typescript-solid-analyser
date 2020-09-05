@@ -1,7 +1,8 @@
+import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { csrfProtection } from '@tssa/common/middlewares/csrf.middleware';
+import { csrfProtection } from '@tssa/common/middleware';
 import cookieSession from 'cookie-session';
 import csurf from 'csurf';
 import morgan from 'morgan';
@@ -18,5 +19,6 @@ async function bootstrap() {
   app.use(csurf());
   app.use(csrfProtection);
   await app.listen(configService.get<number>('PORT'));
+  Logger.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
