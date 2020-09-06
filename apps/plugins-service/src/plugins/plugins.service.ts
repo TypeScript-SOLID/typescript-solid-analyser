@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
+import { PluginInstance } from '@tssa/common/interfaces';
 import { cleanup, parsePackageJson } from '@tssa/common/utils';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
@@ -16,25 +17,32 @@ import {
   InvalidPluginException,
   PluginAlreadyExistException,
   PluginDoesNotExistException,
+  PluginsIdMismatchException,
 } from './exceptions';
-import { PluginsIdMismatchException } from './exceptions/plugins-id-mismatch.exception';
 import { ExtractedPlugin } from './extracted-plugin';
-import { Plugin, PluginInstance } from './interfaces';
+import { Plugin } from './interfaces';
 import { fileExists, moveDir, writeFileFromBase64 } from './utils';
 
 @Injectable()
 export class PluginsService {
-  private readonly pluginsPath: string;
+  private readonly pluginsPath = this.configService.get<string>('PLUGINS_PATH');
 
   constructor(
-    @InjectModel('Plugin') private readonly pluginModel: Model<Plugin>,
     private readonly configService: ConfigService,
-  ) {
-    this.pluginsPath = configService.get<string>('pluginsPath');
-  }
+    @InjectModel('Plugin') private readonly pluginModel: Model<Plugin>,
+  ) {}
 
   async findAll(): Promise<Plugin[]> {
     return this.pluginModel.find().sort({ name: 'asc' });
+  }
+
+  async findEnabled(): Promise<Plugin[]> {
+    return this.pluginModel.find({ is_enabled: true }).sort({ name: 'asc' });
+  }
+
+  async getPluginPathById(id: string): Promise<string> {
+    const plugin = await this.pluginModel.findById(id);
+    return path.join(this.pluginsPath, plugin.name, plugin.main);
   }
 
   async upload(dataUri: string): Promise<string> {
@@ -51,13 +59,13 @@ export class PluginsService {
       throw new PluginAlreadyExistException([pathToPluginZip, pathToExtractPlugin]);
     }
     const createdPlugin: Plugin = await new this.pluginModel(plugin).save();
-    await moveDir(pathToExtractPlugin, path.join(this.pluginsPath, createdPlugin.name));
+    await moveDir(pathToExtractPlugin, this.pluginsPath, createdPlugin.name);
     cleanup(pathToPluginZip);
     return createdPlugin;
   }
 
   async update(updatePluginDto: UpdatePluginDto): Promise<Plugin> {
-    const { pathToPluginZip, pathToExtractPlugin } = await this.getPaths(updatePluginDto.fileName);
+    const { pathToPluginZip, pathToExtractPlugin } = await this.getPaths(updatePluginDto.filename);
     const extractedPlugin: ExtractedPlugin = await this.extractZippedPlugin(pathToPluginZip, pathToExtractPlugin);
     const pluginToUpdate: Plugin = await this.pluginModel
       .findById(updatePluginDto.id)
@@ -67,7 +75,7 @@ export class PluginsService {
     }
     const updatedPlugin: Plugin = await pluginToUpdate.updateOne(extractedPlugin);
     await cleanup(path.join(this.pluginsPath, extractedPlugin.name));
-    await moveDir(pathToExtractPlugin, path.join(this.pluginsPath, extractedPlugin.name));
+    await moveDir(pathToExtractPlugin, this.pluginsPath, extractedPlugin.name);
     cleanup(pathToPluginZip);
     return updatedPlugin;
   }
@@ -90,7 +98,8 @@ export class PluginsService {
         const pluginModulePath = path.join(this.pluginsPath, plugin.name, plugin.main);
         delete require.cache[require.resolve(pluginModulePath)];
         //TODO: ensure type
-        const pluginInstance: PluginInstance = await import(pluginModulePath);
+        const pluginInstance = (await import(`${pluginModulePath}`)) as PluginInstance;
+        console.log(pluginInstance);
         return pluginInstance;
       }),
     );

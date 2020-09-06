@@ -6,5 +6,5 @@ export class UpdatePluginDto {
   readonly id: string;
   @IsNotEmpty()
   @IsString()
-  readonly fileName: string;
+  readonly filename: string;
 }
