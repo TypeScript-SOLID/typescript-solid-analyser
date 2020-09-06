@@ -35,8 +35,9 @@ export class AnalysesService {
           asdf.data,
           { encoding: 'utf-8' },
         );
-        const a = `C:/Users/JurekKiler/Desktop/typescript-solid-analyser/apps/analyses-service/tmp/${plugin.name}/${plugin.main}`;
-        return require(a);
+        return import(
+          `C:/Users/JurekKiler/Desktop/typescript-solid-analyser/apps/analyses-service/tmp/${plugin.name}/${plugin.main}`
+        );
       }),
     );
   }
