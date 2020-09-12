@@ -36,3 +36,4 @@ lerna-debug.log*
 .vscode/
 .env
 plugins_dev/
+apps/frontend/node_modules/
