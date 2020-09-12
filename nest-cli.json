@@ -50,7 +50,8 @@
       "entryFile": "main",
       "sourceRoot": "apps/analyses-service/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/analyses-service/tsconfig.app.json"
+        "tsConfigPath": "apps/analyses-service/tsconfig.app.json",
+        "webpack": false
       }
     }
   }

@@ -51,11 +51,11 @@ export class PluginsController {
 
   @Patch('/:id/enable')
   private async enable(@Param('id') id: string): Promise<void> {
-    return this.pluginsService.setEnable(id, true);
+    return this.pluginsService.setEnabled(id, true);
   }
 
   @Patch('/:id/disable')
   private async disable(@Param('id') id: string): Promise<void> {
-    return this.pluginsService.setEnable(id, false);
+    return this.pluginsService.setEnabled(id, false);
   }
 }

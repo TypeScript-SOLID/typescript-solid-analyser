@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
-import { PluginInstance } from '@tssa/common/interfaces';
 import { cleanup, parsePackageJson } from '@tssa/common/utils';
+import { fileExists, moveDir, writeFileFromBase64 } from '@tssa/common/utils';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { randomBytes } from 'crypto';
 import extract from 'extract-zip';
 import { Model } from 'mongoose';
-import * as os from 'os';
-import * as path from 'path';
+import os from 'os';
+import path from 'path';
 
 import { UpdatePluginDto } from './dto/update-plugin.dto';
 import {
@@ -17,11 +17,11 @@ import {
   InvalidPluginException,
   PluginAlreadyExistException,
   PluginDoesNotExistException,
+  PluginNotFoundException,
   PluginsIdMismatchException,
 } from './exceptions';
 import { ExtractedPlugin } from './extracted-plugin';
 import { Plugin } from './interfaces';
-import { fileExists, moveDir, writeFileFromBase64 } from './utils';
 
 @Injectable()
 export class PluginsService {
@@ -41,8 +41,8 @@ export class PluginsService {
   }
 
   async getPluginPathById(id: string): Promise<string> {
-    const plugin = await this.pluginModel.findById(id);
-    return path.join(this.pluginsPath, plugin.name, plugin.main);
+    const plugin = await this.pluginModel.findById(id).orFail(new PluginNotFoundException());
+    return path.resolve(this.pluginsPath, plugin.name, plugin.main);
   }
 
   async upload(dataUri: string): Promise<string> {
@@ -86,23 +86,8 @@ export class PluginsService {
     return;
   }
 
-  async setEnable(_id: string, is_enabled: boolean): Promise<void> {
+  async setEnabled(_id: string, is_enabled: boolean): Promise<void> {
     await this.pluginModel.findOneAndUpdate({ _id }, { is_enabled }).orFail(new PluginDoesNotExistException());
-    return;
-  }
-
-  async loadEnabledPlugins(): Promise<PluginInstance[]> {
-    const enabledPlugins = await this.pluginModel.find({ is_enabled: true }).sort({ name: 'asc' });
-    return Promise.all<PluginInstance>(
-      enabledPlugins.map(async (plugin) => {
-        const pluginModulePath = path.join(this.pluginsPath, plugin.name, plugin.main);
-        delete require.cache[require.resolve(pluginModulePath)];
-        //TODO: ensure type
-        const pluginInstance = (await import(`${pluginModulePath}`)) as PluginInstance;
-        console.log(pluginInstance);
-        return pluginInstance;
-      }),
-    );
   }
 
   private async getPaths(pluginZipName: string): Promise<{ pathToPluginZip: string; pathToExtractPlugin: string }> {

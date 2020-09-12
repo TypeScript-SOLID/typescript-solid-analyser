@@ -5,7 +5,7 @@ export class AnalysisResultDto implements WsResponse {
   data: Record<string, unknown>[];
 
   constructor(result: Record<string, unknown>[]) {
-    this.event = 'results';
+    this.event = 'analysis_result';
     this.data = result;
   }
 }
