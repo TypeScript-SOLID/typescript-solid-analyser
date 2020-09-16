@@ -38,7 +38,7 @@ export class AnalysesService {
         const resolvedPluginModulePath = path.resolve(this.tmpDir, plugin.name as string, plugin.main as string);
         writeFile(resolvedPluginModulePath, pluginModule.data);
         delete require.cache[require.resolve(resolvedPluginModulePath)];
-        return import(resolvedPluginModulePath) as Promise<PluginInstance>;
+        return import(`http://localhost:3002/plugins/${plugin._id}`) as Promise<PluginInstance>;
       }),
     );
   }

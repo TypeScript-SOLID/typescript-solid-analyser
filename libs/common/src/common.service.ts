@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
@@ -16,7 +16,7 @@ export class CommonService {
   constructor(private readonly jwtService: JwtService) {}
 
   validateRequest(req: Request): boolean {
-    if (!req.session?.jwt) return false;
+    if (!req.session?.jwt) throw new HttpException('Not authorized', HttpStatus.UNAUTHORIZED);
     try {
       const { access_token, user } = this.jwtService.verify(req.session.jwt) as SessionPayload;
       req.access_token = access_token;
