@@ -1,5 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Res, UsePipes, ValidationPipe } from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 
 import { CreatePluginDto } from './dto/create-plugin.dto';
 import { UpdatePluginDto } from './dto/update-plugin.dto';
@@ -23,9 +22,9 @@ export class PluginsController {
   }
 
   @Get('/:id')
-  private async findOne(@Res() res: Response, @Param('id') id: string): Promise<void> {
-    const filepath = await this.pluginsService.getPluginPathById(id);
-    res.sendFile(filepath);
+  private async findOne(@Param('id') id: string): Promise<string> {
+    const pluginBase64Encoded = await this.pluginsService.getPluginAsBase64ById(id);
+    return pluginBase64Encoded;
   }
 
   @Post('/upload')

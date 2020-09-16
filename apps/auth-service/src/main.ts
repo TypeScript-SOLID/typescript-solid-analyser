@@ -3,9 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { csrfProtection } from '@tssa/common/middleware';
-import cookieSession from 'cookie-session';
-import csurf from 'csurf';
-import morgan from 'morgan';
+import cookieSession = require('cookie-session');
+import csurf = require('csurf');
+import morgan = require('morgan');
 
 import { AppModule } from './app.module';
 

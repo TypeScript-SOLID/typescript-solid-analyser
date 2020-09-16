@@ -8,6 +8,15 @@
     "tsConfigPath": "apps/auth-service/tsconfig.app.json"
   },
   "projects": {
+    "analyses-service": {
+      "type": "application",
+      "root": "apps/analyses-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/analyses-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/analyses-service/tsconfig.app.json"
+      }
+    },
     "auth-service": {
       "type": "application",
       "root": "apps/auth-service",
@@ -15,15 +24,6 @@
       "sourceRoot": "apps/auth-service/src",
       "compilerOptions": {
         "tsConfigPath": "apps/auth-service/tsconfig.app.json"
-      }
-    },
-    "repositories-service": {
-      "type": "application",
-      "root": "apps/repositories-service",
-      "entryFile": "main",
-      "sourceRoot": "apps/repositories-service/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/repositories-service/tsconfig.app.json"
       }
     },
     "common": {
@@ -44,14 +44,13 @@
         "tsConfigPath": "apps/plugins-service/tsconfig.app.json"
       }
     },
-    "analyses-service": {
+    "repositories-service": {
       "type": "application",
-      "root": "apps/analyses-service",
+      "root": "apps/repositories-service",
       "entryFile": "main",
-      "sourceRoot": "apps/analyses-service/src",
+      "sourceRoot": "apps/repositories-service/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/analyses-service/tsconfig.app.json",
-        "webpack": false
+        "tsConfigPath": "apps/repositories-service/tsconfig.app.json"
       }
     }
   }
