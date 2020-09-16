@@ -43,6 +43,16 @@
       "compilerOptions": {
         "tsConfigPath": "apps/plugins-service/tsconfig.app.json"
       }
+    },
+    "analyses-service": {
+      "type": "application",
+      "root": "apps/analyses-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/analyses-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/analyses-service/tsconfig.app.json",
+        "webpack": false
+      }
     }
   }
 }

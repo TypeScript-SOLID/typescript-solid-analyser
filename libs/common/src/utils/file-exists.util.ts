@@ -1,8 +1,8 @@
-import { rename } from 'fs';
+import { stat } from 'fs';
 
-export function moveDir(from: string, to: string): Promise<boolean> {
+export function fileExists(pathToFile: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
-    rename(from, to, (err) => {
+    stat(pathToFile, (err) => {
       if (err) {
         reject(err);
         return;
