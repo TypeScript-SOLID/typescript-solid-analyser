@@ -1,19 +1,14 @@
 import { HttpService, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { PluginInstance } from '@tssa/common/interfaces';
 import { cleanup } from '@tssa/common/utils';
-import { writeFile } from '@tssa/common/utils/write-file.util';
 import { Clone } from 'nodegit';
-import path from 'path';
 import { dir } from 'tmp-promise';
 
 import { AnalysisResultDto } from './dto/analysis-result.dto';
 
 @Injectable()
 export class AnalysesService {
-  private readonly tmpDir: string = this.configService.get<string>('TMP');
-
-  constructor(private readonly configService: ConfigService, private readonly httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService) {}
 
   async performAnalysis(cloneUrl: string): Promise<AnalysisResultDto> {
     const response = await this.httpService
@@ -35,10 +30,9 @@ export class AnalysesService {
         const pluginModule = await this.httpService
           .get<string>(`http://localhost:3002/plugins/${plugin._id}`)
           .toPromise();
-        const resolvedPluginModulePath = path.resolve(this.tmpDir, plugin.name as string, plugin.main as string);
-        writeFile(resolvedPluginModulePath, pluginModule.data);
-        delete require.cache[require.resolve(resolvedPluginModulePath)];
-        return import(`http://localhost:3002/plugins/${plugin._id}`) as Promise<PluginInstance>;
+        return import(/* webpackIgnore: true */ `data:text/javascript;base64,${pluginModule.data}`) as Promise<
+          PluginInstance
+        >;
       }),
     );
   }

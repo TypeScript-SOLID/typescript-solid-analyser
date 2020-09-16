@@ -8,8 +8,9 @@ import { validateOrReject } from 'class-validator';
 import { randomBytes } from 'crypto';
 import extract from 'extract-zip';
 import { Model } from 'mongoose';
-import os from 'os';
-import path from 'path';
+import { readFileSync } from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 
 import { UpdatePluginDto } from './dto/update-plugin.dto';
 import {
@@ -40,9 +41,10 @@ export class PluginsService {
     return this.pluginModel.find({ is_enabled: true }).sort({ name: 'asc' });
   }
 
-  async getPluginPathById(id: string): Promise<string> {
+  async getPluginAsBase64ById(id: string): Promise<string> {
     const plugin = await this.pluginModel.findById(id).orFail(new PluginNotFoundException());
-    return path.resolve(this.pluginsPath, plugin.name, plugin.main);
+    const filepath = path.resolve(this.pluginsPath, plugin.name, plugin.main);
+    return readFileSync(filepath).toString('base64');
   }
 
   async upload(dataUri: string): Promise<string> {
