@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@tssa/common/guards';
 import { Request, Response } from 'express';
 
-import { UserDto } from '../users/dto/user.dto';
+import { UserDto } from '../users/dto';
 import { AuthService } from './auth.service';
 
 @Controller('auth')

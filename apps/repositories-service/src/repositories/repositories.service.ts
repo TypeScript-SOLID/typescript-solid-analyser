@@ -1,6 +1,7 @@
 import { HttpService, Injectable } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
 
-import { RepositoryDto } from './dto/repository.dto';
+import { RepositoryDto } from './dto';
 
 @Injectable()
 export class RepositoriesService {
@@ -14,9 +15,6 @@ export class RepositoriesService {
       .toPromise();
     return response.data
       .filter((repo) => (repo.language as string)?.toLowerCase() === 'typescript')
-      .map(
-        (repo) =>
-          new RepositoryDto(repo.id as number, repo.clone_url as string, repo.name as string, repo.full_name as string),
-      );
+      .map((repo) => plainToClass(RepositoryDto, repo, { strategy: 'excludeAll' }));
   }
 }

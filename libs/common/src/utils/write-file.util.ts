@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 
-export function writeFile(
+export const writeFile = (
   filename: string,
   content: string | Uint8Array | Uint8ClampedArray | Uint16Array | Uint32Array | DataView | Float32Array | Float64Array,
-): void {
+): void => {
   let filepath = filename.replace(/\\/g, '/');
 
   let root = '';
@@ -25,4 +25,4 @@ export function writeFile(
   }, root);
 
   return fs.writeFileSync(root + filepath, content, 'utf-8');
-}
+};

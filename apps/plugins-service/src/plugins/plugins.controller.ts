@@ -1,8 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 
-import { CreatePluginDto } from './dto/create-plugin.dto';
-import { UpdatePluginDto } from './dto/update-plugin.dto';
-import { UploadPluginDto } from './dto/upload-plugin.dto';
+import { CreatePluginDto, UpdatePluginDto, UploadPluginDto } from './dto';
 import { Plugin } from './interfaces';
 import { PluginsService } from './plugins.service';
 

@@ -7,12 +7,12 @@ import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { randomBytes } from 'crypto';
 import extract from 'extract-zip';
-import { Model } from 'mongoose';
 import { readFileSync } from 'fs';
+import { Model } from 'mongoose';
 import * as os from 'os';
 import * as path from 'path';
 
-import { UpdatePluginDto } from './dto/update-plugin.dto';
+import { UpdatePluginDto } from './dto';
 import {
   IncorrectPluginUploadException,
   InvalidPluginException,

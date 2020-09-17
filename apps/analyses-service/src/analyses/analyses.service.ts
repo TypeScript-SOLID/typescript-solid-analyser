@@ -1,36 +1,44 @@
 import { HttpService, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PluginInstance } from '@tssa/common/interfaces';
-import { cleanup } from '@tssa/common/utils';
-import { Clone } from 'nodegit';
+import { cleanup, writeFileFromStream } from '@tssa/common/utils';
+import extract from 'extract-zip';
+import { readdirSync } from 'fs';
+import { resolve } from 'path';
 import { dir } from 'tmp-promise';
 
-import { AnalysisResultDto } from './dto/analysis-result.dto';
+import { AnalysisResultDto } from './dto';
 
 @Injectable()
 export class AnalysesService {
-  constructor(private readonly httpService: HttpService) {}
+  private readonly PLUGINS_SERVICE_URL = this.configService.get<string>('PLUGINS_SERVICE_URL');
 
-  async performAnalysis(cloneUrl: string): Promise<AnalysisResultDto> {
+  constructor(private readonly configService: ConfigService, private readonly httpService: HttpService) {}
+
+  async performAnalysis(access_token: string, url: string): Promise<AnalysisResultDto> {
     const response = await this.httpService
-      .get<Record<string, unknown>[]>('http://localhost:3002/plugins/enabled')
+      .get<Record<string, unknown>[]>(`${this.PLUGINS_SERVICE_URL}/enabled`)
       .toPromise();
     const instansiatedPlugins = await this.instantiatePlugins(response.data);
     const repoTmpDir = await dir();
-    await Clone.clone(cloneUrl, repoTmpDir.path);
-    const result = await this.executeTests(instansiatedPlugins, repoTmpDir.path);
+    await writeFileFromStream(url, resolve(repoTmpDir.path, 'repo.zip'), access_token);
+    await extract(resolve(repoTmpDir.path, 'repo.zip'), { dir: repoTmpDir.path });
+    const extractedRepositoryDirectoryName = readdirSync(repoTmpDir.path, { withFileTypes: true })
+      .filter((file) => file.isDirectory())
+      .pop().name;
+    const pathToRepo = resolve(repoTmpDir.path, extractedRepositoryDirectoryName);
+    const result = await this.executeTests(instansiatedPlugins, pathToRepo);
     cleanup(repoTmpDir.path);
-    console.log('result:', result);
-    console.log('done');
     return new AnalysisResultDto(result);
   }
 
   private async instantiatePlugins(plugins: Record<string, unknown>[]): Promise<PluginInstance[]> {
     return Promise.all<PluginInstance>(
       plugins.map(async (plugin) => {
-        const pluginModule = await this.httpService
-          .get<string>(`http://localhost:3002/plugins/${plugin._id}`)
-          .toPromise();
-        return import(/* webpackIgnore: true */ `data:text/javascript;base64,${pluginModule.data}`) as Promise<
+        const pluginModuleBase64Encoded = (
+          await this.httpService.get<string>(`${this.PLUGINS_SERVICE_URL}/${plugin._id}`).toPromise()
+        ).data;
+        return import(/* webpackIgnore: true */ `data:text/javascript;base64,${pluginModuleBase64Encoded}`) as Promise<
           PluginInstance
         >;
       }),

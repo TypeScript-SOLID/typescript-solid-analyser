@@ -15,7 +15,7 @@ export const Results = () => {
     <>
       <h1>Results: {repositoryName}</h1>
       <Accordion defaultActiveKey="0">
-        {analysisResult.map((analysisResult, index) => {
+        {analysisResult?.map((analysisResult, index) => {
           return (
             <Card key={analysisResult.pluginName}>
               <Accordion.Toggle

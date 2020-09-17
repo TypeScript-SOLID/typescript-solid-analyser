@@ -11,7 +11,7 @@ const RepositoryCard = ({ repository }) => {
       <Card.Body>
         <Row>
           <Col xs={8} className="text-left">
-            <a href={repository.clone_url}>
+            <a href={repository.html_url}>
               <h5 className="card-subtitle text-muted">{repository.full_name.split('/').shift()}/</h5>
               <h4 className="card-title text-dark">{repository.name}</h4>
             </a>

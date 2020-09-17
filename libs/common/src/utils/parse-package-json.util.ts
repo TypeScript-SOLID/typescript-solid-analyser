@@ -1,6 +1,6 @@
 import { readFile } from 'fs';
 
-export function parsePackageJson(pathToFile: string): Promise<Record<string, unknown>> {
+export const parsePackageJson = (pathToFile: string): Promise<Record<string, unknown>> => {
   return new Promise((resolve, reject) => {
     readFile(pathToFile, (err, data) => {
       if (err) {
@@ -10,4 +10,4 @@ export function parsePackageJson(pathToFile: string): Promise<Record<string, unk
       resolve(JSON.parse(data.toString()));
     });
   });
-}
+};

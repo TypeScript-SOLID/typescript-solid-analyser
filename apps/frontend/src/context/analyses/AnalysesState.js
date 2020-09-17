@@ -16,7 +16,7 @@ const AnalysesState = (props) => {
 
   const [state, dispatch] = useReducer(analysesReducer, initialState);
 
-  const performAnalysis = (cloneUrl, fullName) => {
+  const performAnalysis = (url, fullName) => {
     dispatch({ type: START_ANALYSIS });
     const socket = new WebSocket(`wss://${window.location.host}/api/v1/analyses`);
     socket.onopen = () => {
@@ -24,7 +24,7 @@ const AnalysesState = (props) => {
       socket.send(
         JSON.stringify({
           event: 'perform_analysis',
-          data: { clone_url: cloneUrl },
+          data: { url },
         }),
       );
     };

@@ -11,7 +11,7 @@ export const Analyze = () => {
 
   useEffect(() => {
     const repository = repositories.find((repository) => repository.name === repositoryName);
-    performAnalysis(repository.clone_url, repository.full_name);
+    performAnalysis(repository.url, repository.full_name);
     // eslint-disable-next-line
   }, []);
 

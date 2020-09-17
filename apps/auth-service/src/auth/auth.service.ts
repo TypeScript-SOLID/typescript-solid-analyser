@@ -2,8 +2,7 @@ import { HttpException, HttpService, HttpStatus, Injectable, Logger } from '@nes
 import { ConfigService } from '@nestjs/config';
 import { plainToClass } from 'class-transformer';
 
-import { CreateGithubUserDto } from '../users/dto/create-github-user.dto';
-import { UserDto } from '../users/dto/user.dto';
+import { CreateGithubUserDto, UserDto } from '../users/dto';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -68,6 +67,6 @@ export class AuthService {
         headers: { Authorization: `token ${access_token}` },
       })
       .toPromise();
-    return response.data.filter(email => email.primary).shift().email as string;
+    return response.data.filter((email) => email.primary).shift().email as string;
   }
 }

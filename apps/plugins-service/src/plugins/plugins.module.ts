@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CommonModule } from '@tssa/common';
 
-import { Plugin, PluginSchema } from './models/plugin.model';
+import { Plugin, PluginSchema } from './models';
 import { PluginsController } from './plugins.controller';
 import { PluginsService } from './plugins.service';
 

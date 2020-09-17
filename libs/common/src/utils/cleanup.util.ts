@@ -1,6 +1,6 @@
 import rimraf from 'rimraf';
 
-export function cleanup(path: string): Promise<void> {
+export const cleanup = (path: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     rimraf(path, (err: Error) => {
       if (err) {
@@ -10,4 +10,4 @@ export function cleanup(path: string): Promise<void> {
       resolve();
     });
   });
-}
+};
