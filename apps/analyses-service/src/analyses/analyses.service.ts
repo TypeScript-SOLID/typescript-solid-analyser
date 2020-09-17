@@ -16,32 +16,31 @@ export class AnalysesService {
   constructor(private readonly configService: ConfigService, private readonly httpService: HttpService) {}
 
   async performAnalysis(access_token: string, url: string): Promise<AnalysisResultDto> {
-    const response = await this.httpService
-      .get<Record<string, unknown>[]>(`${this.PLUGINS_SERVICE_URL}/enabled`)
-      .toPromise();
-    const instansiatedPlugins = await this.instantiatePlugins(response.data);
-    const repoTmpDir = await dir();
-    await writeFileFromStream(url, resolve(repoTmpDir.path, 'repo.zip'), access_token);
-    await extract(resolve(repoTmpDir.path, 'repo.zip'), { dir: repoTmpDir.path });
-    const extractedRepositoryDirectoryName = readdirSync(repoTmpDir.path, { withFileTypes: true })
-      .filter((file) => file.isDirectory())
-      .pop().name;
-    const pathToRepo = resolve(repoTmpDir.path, extractedRepositoryDirectoryName);
+    const [instansiatedPlugins, pathToRepo] = await Promise.all<PluginInstance[], string>([
+      this.getInstantiatedPlugins(),
+      this.getPathToRepo(access_token, url),
+    ]);
     const result = await this.executeTests(instansiatedPlugins, pathToRepo);
-    cleanup(repoTmpDir.path);
+    cleanup(resolve(pathToRepo, '..'));
     return new AnalysisResultDto(result);
   }
 
-  private async instantiatePlugins(plugins: Record<string, unknown>[]): Promise<PluginInstance[]> {
+  private async getPathToRepo(access_token: string, url: string): Promise<string> {
+    const repoTmpDir = await dir();
+    await writeFileFromStream(url, resolve(repoTmpDir.path, 'repo.zip'), access_token);
+    await extract(resolve(repoTmpDir.path, 'repo.zip'), { dir: repoTmpDir.path });
+    const extractedRepositoryDirectoryName = readdirSync(repoTmpDir.path, { withFileTypes: true }).find((file) =>
+      file.isDirectory(),
+    ).name;
+    return resolve(repoTmpDir.path, extractedRepositoryDirectoryName);
+  }
+
+  private async getInstantiatedPlugins(): Promise<PluginInstance[]> {
+    const response = await this.httpService.get<string[]>(`${this.PLUGINS_SERVICE_URL}/enabled`).toPromise();
     return Promise.all<PluginInstance>(
-      plugins.map(async (plugin) => {
-        const pluginModuleBase64Encoded = (
-          await this.httpService.get<string>(`${this.PLUGINS_SERVICE_URL}/${plugin._id}`).toPromise()
-        ).data;
-        return import(/* webpackIgnore: true */ `data:text/javascript;base64,${pluginModuleBase64Encoded}`) as Promise<
-          PluginInstance
-        >;
-      }),
+      response.data.map(
+        (pluginBase64Encoded) => import(/* webpackIgnore: true */ `data:text/javascript;base64,${pluginBase64Encoded}`),
+      ),
     );
   }
 

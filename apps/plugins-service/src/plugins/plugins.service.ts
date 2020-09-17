@@ -18,7 +18,6 @@ import {
   InvalidPluginException,
   PluginAlreadyExistException,
   PluginDoesNotExistException,
-  PluginNotFoundException,
   PluginsIdMismatchException,
 } from './exceptions';
 import { ExtractedPlugin } from './extracted-plugin';
@@ -37,14 +36,11 @@ export class PluginsService {
     return this.pluginModel.find().sort({ name: 'asc' });
   }
 
-  async findEnabled(): Promise<Plugin[]> {
-    return this.pluginModel.find({ is_enabled: true }).sort({ name: 'asc' });
-  }
-
-  async getPluginAsBase64ById(id: string): Promise<string> {
-    const plugin = await this.pluginModel.findById(id).orFail(new PluginNotFoundException());
-    const filepath = path.resolve(this.pluginsPath, plugin.name, plugin.main);
-    return readFileSync(filepath).toString('base64');
+  async findEnabledAsBase64(): Promise<string[]> {
+    const plugins = await this.pluginModel.find({ is_enabled: true }).sort({ name: 'asc' });
+    return plugins.map((plugin) =>
+      readFileSync(path.resolve(this.pluginsPath, plugin.name, plugin.main)).toString('base64'),
+    );
   }
 
   async upload(dataUri: string): Promise<string> {

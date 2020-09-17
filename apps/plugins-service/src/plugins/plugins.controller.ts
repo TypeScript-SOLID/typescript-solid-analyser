@@ -15,14 +15,8 @@ export class PluginsController {
   }
 
   @Get('/enabled')
-  private async findEnabled(): Promise<Plugin[]> {
-    return this.pluginsService.findEnabled();
-  }
-
-  @Get('/:id')
-  private async findOne(@Param('id') id: string): Promise<string> {
-    const pluginBase64Encoded = await this.pluginsService.getPluginAsBase64ById(id);
-    return pluginBase64Encoded;
+  private async findEnabledAsBase64(): Promise<string[]> {
+    return this.pluginsService.findEnabledAsBase64();
   }
 
   @Post('/upload')
